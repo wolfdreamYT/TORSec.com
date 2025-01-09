@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TORSec Archiver</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+</head>
+<body>
+    <header>
+        <h1>TORSec</h1>
+        <nav>
+            <button onclick="location.href='index.html'">Home</button>
+            <button onclick="location.href='unarchiver.html'">Unarchiver</button>
+            <button onclick="location.href='archiver.html', '_blank'">* Archiver</button>
+            <button onclick="location.href='download.html'">Download</button>
+            <button onclick="location.href='https://discord.gg/rUherPPRmp'">Contact</button>
+        </nav>
+    </header>
+
+    <div class="container">
+        <h1>TORSec Archiver</h1>
+        <div class="upload-area" id="uploadArea" ondrop="handleDrop(event)" ondragover="event.preventDefault()">
+            <p>Drag & Drop Files Here</p>
+            <button onclick="document.getElementById('fileInput').click()">Select Files</button>
+            <input type="file" id="fileInput" multiple hidden>
+        </div>
+        <input type="text" id="passwordInput" placeholder="Enter a password" class="input-field">
+        <input type="text" id="filenameInput" placeholder="Enter archive name" class="input-field">
+        <button class="submit-btn" onclick="archiveFiles()">Create .torsec</button>
+        <p id="status"></p>
+    </div>
+
+    <script>
+        async function archiveFiles() {
+            const CUSTOM_HEADER = "TORSECA12CC3247ZX7J5U9226"; 
+            const fileInput = document.getElementById('fileInput');
+            const passwordInput = document.getElementById('passwordInput');
+            const filenameInput = document.getElementById('filenameInput');
+            const status = document.getElementById('status');
+
+            const files = fileInput.files;
+            const password = passwordInput.value;
+            let archiveName = filenameInput.value.trim();
+
+            if (!files.length) {
+                status.textContent = "Please select at least one file.";
+                return;
+            }
+            if (!password) {
+                status.textContent = "Please enter a password.";
+                return;
+            }
+            if (!archiveName) {
+                archiveName = "archive"; 
+            }
+
+            const hashedPassword = CryptoJS.SHA256(password).toString(CryptoJS.enc.Base64);
+            const zip = new JSZip();
+
+            status.textContent = "Processing files...";
+            try {
+                for (const file of files) {
+                    const content = await file.text();
+                    const encryptedContent = CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(content));
+                    zip.file(file.name, encryptedContent);
+                }
+
+                zip.file("signature", hashedPassword);
+
+                const zipBlob = await zip.generateAsync({ type: "uint8array" });
+
+                const customHeaderBytes = new TextEncoder().encode(CUSTOM_HEADER);
+                const torsecFile = new Uint8Array(customHeaderBytes.length + zipBlob.length);
+                torsecFile.set(customHeaderBytes);
+                torsecFile.set(zipBlob, customHeaderBytes.length);
+
+                const blob = new Blob([torsecFile], { type: "application/octet-stream" });
+                const link = document.createElement("a");
+                link.href = URL.createObjectURL(blob);
+                link.download = `${archiveName}.torsec`;
+                link.style.display = "none";
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link); 
+
+                status.textContent = "Archive created and downloaded successfully!";
+            } catch (error) {
+                console.error(error);
+                status.textContent = "An error occurred while creating the archive.";
+            }
+        }
+    </script>
+</body>
+</html>

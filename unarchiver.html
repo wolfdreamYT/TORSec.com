@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TORSec Unarchiver</title>
+    <link rel="stylesheet" href="unarchiver.css">
+</head>
+<body>
+    <header>
+        <h1>TORSec</h1>
+        <nav>
+            <button onclick="location.href='index.html'">Home</button>
+            <button onclick="location.href='unarchiver.html'">* Unarchiver</button>
+            <button onclick="location.href='archiver.html', '_blank'">Archiver</button>
+            <button onclick="location.href='download.html'">Download</button>
+            <button onclick="location.href='https://discord.gg/rUherPPRmp'">Contact</button>
+        </nav>
+    </header>
+
+    <div class="container">
+        <h1>TORSec Unarchiver</h1>
+        <p>Welcome to the official unarchiver for TORSec files! Drag & drop your .torsec file below or use the upload button.</p>
+
+        <div id="dropArea" class="drop-area" ondrop="handleDrop(event)" ondragover="event.preventDefault()">
+            <p>Drag & Drop .torsec File Here</p>
+            <button onclick="document.getElementById('fileInput').click()">Or Select File</button>
+            <input type="file" id="fileInput" accept=".torsec" hidden>
+        </div>
+
+        <label for="passwordInput">Enter Password:</label>
+        <input type="text" id="passwordInput" placeholder="Enter your password">
+
+        <button id="unarchiveButton">Unarchive</button>
+
+        <div id="output"></div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script>
+        const dropArea = document.getElementById('dropArea');
+        const fileInput = document.getElementById('fileInput');
+        let selectedFile = null;
+
+        dropArea.addEventListener('click', () => fileInput.click());
+
+        function handleDrop(event) {
+            event.preventDefault();
+            selectedFile = event.dataTransfer.files[0];
+            if (selectedFile) {
+                document.getElementById('output').textContent = `Selected File: ${selectedFile.name}`;
+            }
+        }
+
+        fileInput.addEventListener('change', (event) => {
+            selectedFile = event.target.files[0];
+            if (selectedFile) {
+                document.getElementById('output').textContent = `Selected File: ${selectedFile.name}`;
+            }
+        });
+
+        document.getElementById('unarchiveButton').addEventListener('click', () => {
+            const passwordInput = document.getElementById('passwordInput');
+            const output = document.getElementById('output');
+            output.textContent = '';
+
+            if (!selectedFile) {
+                appendOutput("Error: No file selected.");
+                return;
+            }
+
+            const password = passwordInput.value;
+            if (!password) {
+                appendOutput("Error: Password is required.");
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = async () => {
+                try {
+                    const data = reader.result;
+                    const zip = new JSZip();
+                    zip.loadAsync(data).then((contents) => {
+                        const signatureFile = contents.files['signature'];
+                        if (!signatureFile) {
+                            appendOutput("Error: Invalid .torsec file (missing signature).");
+                            return;
+                        }
+
+                        signatureFile.async('string').then(async (signature) => {
+                            const hashedPassword = await hashPassword(password);
+                            if (hashedPassword !== signature) {
+                                appendOutput("Error: Incorrect password or file integrity compromised.");
+                                return;
+                            }
+
+                            appendOutput("Password verified. Extracting files...");
+                            Object.keys(contents.files).forEach((filename) => {
+                                if (filename === 'signature') return;
+
+                                contents.files[filename].async('blob').then((fileContent) => {
+                                    downloadFile(fileContent, filename);
+                                    appendOutput(`Extracted: ${filename}`);
+                                });
+                            });
+                        });
+                    });
+                } catch (err) {
+                    appendOutput(`Error: ${err.message}`);
+                }
+            };
+
+            reader.readAsArrayBuffer(selectedFile);
+        });
+
+        function appendOutput(message) {
+            const output = document.getElementById('output');
+            const p = document.createElement('p');
+            p.textContent = message;
+            output.appendChild(p);
+        }
+
+        async function hashPassword(password) {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(password);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return btoa(String.fromCharCode(...hashArray));
+        }
+
+        function downloadFile(content, filename) {
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(content);
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
+</body>
+</html>
