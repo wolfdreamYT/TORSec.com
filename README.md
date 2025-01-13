@@ -14,7 +14,7 @@ Unarchiver can be used to unarchive files. Just simply drag & drop or click sele
 
 **Contact:**
 
-We have contact forums, in our discord and emails. Please email me at <sup>wolfdream226@gmail.com</sup> for bussiness related topics, and chat to me in discord @ discord.wolfymc.com . Please do not post spam/scam as we do not want that. Followc our rules and be safe!
+We have contact forums, in our discord and emails. Please email me at <sup>wolfdream226@gmail.com</sup> for bussiness related topics, and chat to me in discord @ <sup>https://discord.wolfymc.com<s/up> . Please do not post spam/scam as we do not want that. Followc our rules and be safe!
 
 **Q&A:**
 
