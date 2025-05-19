@@ -1,25 +1,25 @@
 # Update !!
 **Please do not use the website anymore. The website contains flaws and is partly corrupted. Please only use the files (python code) to use torsec project!!
 
-TORSec
+# TORSec
 
 the most encrypted file saving and storing ever. These files can be encrypted with a game changing password system. Unlike most softwares that have length limits, no special characters, we here have no rules for that. You can make the most secure password ever, and you can only open it through our unarchiver. No other software can use torsec unarchivers, as they are made to not open when used on external unarchivers.
 
 Heres how to use the website:
 
-**Archiver:**
+# Archiver:
 
 Archiver can be used to archive files you may need but dont want others accessing easily. All you need to do is click "select file", click your file from finder/files, enter a password and then press archive. It will auto download the file for you, in the .torsec format.
 
-**Unarchiver**:
+# Unarchiver:
 
 Unarchiver can be used to unarchive files. Just simply drag & drop or click select files, then use the .torsec file, enter the password given by the owner (if applicable) and press unarchive. This will auto download the file for you in the original format it used. 
 
-**Contact:**
+# Contact:
 
 We have contact forums, in our discord and emails. Please email me at <sup>wolfdream226@gmail.com</sup> for bussiness related topics, and chat to me in discord @ <sup>https://discord.wolfymc.com</sup> . Please do not post spam/scam as we do not want that. Followc our rules and be safe!
 
-**Q&A:**
+# Q&A:
 
 1: Do you have rules for passwords/limits? No, we do not. You can make any password within your keyboards capabilities!
 
