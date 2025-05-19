@@ -1,3 +1,6 @@
+# Update !!
+**Please do not use the website anymore. The website contains flaws and is partly corrupted. Please only use the files (python code) to use torsec project!!
+
 TORSec
 
 the most encrypted file saving and storing ever. These files can be encrypted with a game changing password system. Unlike most softwares that have length limits, no special characters, we here have no rules for that. You can make the most secure password ever, and you can only open it through our unarchiver. No other software can use torsec unarchivers, as they are made to not open when used on external unarchivers.
